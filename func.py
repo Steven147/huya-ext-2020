@@ -24,8 +24,8 @@ def push(req,name,other):
             resp = name(req)
         except:
             continue
-        stri=resp.to_json_string().split('"Sentiment":')[1].split(', "RequestId"')[0]
-        Sent=stri.split('"')[1].split('"')[0]
+        stri=resp.to_json_string().split('"Positive":')[1].split(', "Sentiment"')[0]
+        Sent=float(stri)
         item["序号"]=k
         item["内容"]=i
         item["情感"]=Sent
