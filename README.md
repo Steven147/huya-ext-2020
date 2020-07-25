@@ -22,6 +22,25 @@ jupyter notebook 安装：sudo apt install python3-pip; pip3 install --upgrade p
 
 ## 后端
 
+  <!-- "extId": "vd6316rc" -->
+
+<!-- # src根目录下面创建：local.py local.py可以不提交到代码仓库，避免泄密
+# class HyextConfig(object):
+#     HUYA_APPID = 'xxxx'
+#     HUYA_JWT_SECRET_KEY = 'xxxx' -->
+
+<!-- import ptvsd
+# ptvsd.enable_attach(address = ('localhost', 5678))
+# ptvsd.wait_for_attach() -->
+
+<!-- # 远程调试代码 begin
+# import ptvsd
+# ptvsd.enable_attach(address = ('localhost', 5678))
+# ptvsd.wait_for_attach() -->
+
+进入src目录，执行
+`python3 main.py`
+
 小游戏获得用户鉴权信息
 
 jwt：头部header 载荷payload 签名signature，包括roomid userid
