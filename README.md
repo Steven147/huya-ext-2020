@@ -22,7 +22,9 @@ jupyter notebook 安装：sudo apt install python3-pip; pip3 install --upgrade p
 
 ## 后端
 
-`cd server-python;python main.py`
+cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ;jupyter notebook
+
+cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ~/huya-ext-2020/server-python;python main.py
 
 ### 环境搭建
 
