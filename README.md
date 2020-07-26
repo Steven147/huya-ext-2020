@@ -22,6 +22,8 @@ jupyter notebook 安装：sudo apt install python3-pip; pip3 install --upgrade p
 
 ## 后端
 
+`cd server-python;python main.py`
+
 ### 环境搭建
 
 ```bash
@@ -42,17 +44,14 @@ class HyextConfig(object):
     HUYA_JWT_SECRET_KEY = 'xxxx'
 ```
 
-编辑 `main.py`, 把远程调试代码取消注释：
+<!-- 编辑 `main.py`, 把远程调试代码取消注释：
 `sudo pip3 install websocket-client`
 
 ```py
 # import ptvsd
 # ptvsd.enable_attach(address = ('localhost', 5678))
 # ptvsd.wait_for_attach()
-```
-
-进入src：`cd server-python`
-执行：`python3 main.py`
+``` -->
 
 ### 生成测试用的jwt的方法
 
@@ -63,24 +62,37 @@ class HyextConfig(object):
 
 小游戏获得用户鉴权信息
 
-jwt：头部header 载荷payload 签名signature，包括roomid userid
+- jwt：
+  - 头部header
+  - 载荷payload
+  - 签名signature，包括roomid userid
 
-websocket hyExt.WebSocket ws:// /?jwt=xxx (自动追加)
-
-前端调用 hyExt.context.getUserInfo
-
-观众、主播端都是依附在服务器上
+websocket hyExt.WebSocket ws:// /?jwt=xxx (自动追加，在和虎牙对接后不需要手动添加)
 
 ### websocket调试
-Chrome websocket调试插件：https://www.ijidi.cn/crx-download/pfdhoblngboilpfeibdedpjgfnlcodoo-013.html
+
+- [Chrome websocket调试插件](https://www.ijidi.cn/crx-download/pfdhoblngboilpfeibdedpjgfnlcodoo-013.html)
+- [Web Socket Testing](chrome-extension://fgponpodhbmadfljofbimhhlengambbn/index.html)
 
 websocket url格式：
 
-`ws://127.0.0.1:9090/ws?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlAiLCJwcm9maWxlSWQiOiIxMDAwMCIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIxMDAwIiwidXNlcklkIjoiMTAwMDAiLCJpYXQiOjE1OTUwNjY1MjQsImV4cCI6MTU5NzY1ODUyNCwiYXBwSWQiOiJ1ZDgwMTM4MjY3MzEyOWRjIn0.ScHg_c6Xs5FeH1DnQFEI1bVyfaEcmb5Lnq9gwzNhHno`
+- appid:4e7d7f42cad63759
+- secret_key:8ab04dc8a43a325a4eb10efef299760f
+
+<!-- 主播jwt:
+encoded payload:{'creator': 'DEV', 'role': 'P', 'profileId': '10000', 'extId': 'extId', 'roomId': '22751564', 'userId': '10000', 'iat': 1595468723, 'exp': 1598060723, 'appId': '4e7d7f42cad63759'} jwt:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlAiLCJwcm9maWxlSWQiOiIxMDAwMCIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIyMjc1MTU2NCIsInVzZXJJZCI6IjEwMDAwIiwiaWF0IjoxNTk1NDY4NzIzLCJleHAiOjE1OTgwNjA3MjMsImFwcElkIjoiNGU3ZDdmNDJjYWQ2Mzc1OSJ9.Pt3Nj5NH4OKZGqlhPeKhzoOAVZ-Crj5H1dGjwckokhI
+观众jwt:
+encoded payload:{'creator': 'DEV', 'role': 'U', 'profileId': 'jm6L3RAw1dtSrfGOTxpB', 'extId': 'extId', 'roomId': '22751564', 'userId': '20000', 'iat': 1595468723, 'exp': 1598060723, 'appId': '4e7d7f42cad63759'} jwt:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlUiLCJwcm9maWxlSWQiOiJqbTZMM1JBdzFkdFNyZkdPVHhwQiIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIyMjc1MTU2NCIsInVzZXJJZCI6IjIwMDAwIiwiaWF0IjoxNTk1NDY4NzIzLCJleHAiOjE1OTgwNjA3MjMsImFwcElkIjoiNGU3ZDdmNDJjYWQ2Mzc1OSJ9.0Byo7Y011EqOgIGI1mZ2MaGvCGLOCE7OIgaLZI5zn2k -->
+
+- [主播端测试用链接](ws://106.52.117.231:9090/ws?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlAiLCJwcm9maWxlSWQiOiIxMDAwMCIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIyMjc1MTU2NCIsInVzZXJJZCI6IjEwMDAwIiwiaWF0IjoxNTk1NDY4NzIzLCJleHAiOjE1OTgwNjA3MjMsImFwcElkIjoiNGU3ZDdmNDJjYWQ2Mzc1OSJ9.Pt3Nj5NH4OKZGqlhPeKhzoOAVZ-Crj5H1dGjwckokhI)
+
+- [用户端试用链接](ws://106.52.117.231:9090/ws?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlUiLCJwcm9maWxlSWQiOiJqbTZMM1JBdzFkdFNyZkdPVHhwQiIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIyMjc1MTU2NCIsInVzZXJJZCI6IjIwMDAwIiwiaWF0IjoxNTk1NDY4NzIzLCJleHAiOjE1OTgwNjA3MjMsImFwcElkIjoiNGU3ZDdmNDJjYWQ2Mzc1OSJ9.0Byo7Y011EqOgIGI1mZ2MaGvCGLOCE7OIgaLZI5zn2k)
 
 ### ws 数据包格式
 
 `{"protocol":100,"payload":"{}"}`
+
+[协议具体内容](server-python/logic/protocol.py)
 
 ## 前端
 
@@ -94,7 +106,7 @@ pixi.js框架：
 
 [【教程】使用webpack搭建pixi.js开发环境 - pixijs游戏开发 - SegmentFault 思否](https://segmentfault.com/a/1190000021724296)
 
-React框架：
+<!-- React框架：
 
 [React 元素渲染 | 菜鸟教程](https://www.runoob.com/react/react-rendering-elements.html)
 
@@ -105,10 +117,7 @@ React框架：
 index.js：观众端的入口文件
 index_streamer.js：主播端的入口文件
 
-执行顺序 index -> App(实例)
+执行顺序 index -> App(实例) -->
 
 ## 任务
 
-后端文件整理：
-
-前端实践pixijs最基础小游戏，导出，然后理解demo
