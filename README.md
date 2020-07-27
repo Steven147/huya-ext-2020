@@ -20,6 +20,10 @@ jupyter notebook 安装：sudo apt install python3-pip; pip3 install --upgrade p
 
 [远程仓库 - 廖雪峰的官方网站](https://www.liaoxuefeng.com/wiki/896043488029600/896954117292416)
 
+[基于python的git管理 - Google 搜索](https://www.google.com.hk/search?q=%E5%9F%BA%E4%BA%8Epython%E7%9A%84git%E7%AE%A1%E7%90%86)
+
+[使用 Python 操作 Git 版本库 - GitPython - baiyangcao - 博客园](https://www.cnblogs.com/baiyangcao/p/gitpython.html)
+
 ## 后端
 
 cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ;jupyter notebook
@@ -27,6 +31,13 @@ cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ;jupyter notebook
 cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ~/huya-ext-2020/server-python;python main.py
 
 ### 环境搭建
+
+* [小游戏开发指南 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/game/index)
+* [简介 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/./getting-started)
+* [林绍钦颜值直播_林绍钦视频直播 - 虎牙直播](https://www.huya.com/22751564)
+* [虎牙小程序开发者中心](https://ext.huya.com/#/ext/rce7wayl)
+* [虎牙小程序应用商店](https://appstore.huya.com/#/i)
+* [SDK文档 - 虎牙小程序开发文档](https://dev.huya.com/docs#/sdk/SDK%E6%96%87%E6%A1%A3)
 
 ```bash
 pip install tencentcloud-sdk-python

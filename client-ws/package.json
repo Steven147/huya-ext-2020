@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@hyext/builder-h5game": "^1.7.14"
+    "@hyext/builder-h5game": "^1.7.14",
+    "@hyext/cli": "^1.2.2"
   }
 }
