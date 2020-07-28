@@ -2,6 +2,7 @@ class Main {
     constructor() {
         this.readyList = [];
         this.players = [];
+        this.timer = null;
 
         const app = (this.app = new PIXI.Application({
             antialias: true, width: 375, height: 600
@@ -21,10 +22,11 @@ class Main {
 
     setup(){
         this.button();
+        this.start();
     }
 
     button(){
-        const { app, emotion, classfy, statistics, setup } = this;
+        const { app } = this;
 
         var button1 = new PIXI.Sprite(PIXI.loader.resources["img/01.jpg"].texture);
         button1.buttonMode = true;
@@ -32,7 +34,7 @@ class Main {
         button1.position.set(0, 0);
         button1.scale.set(0.23,0.23);
         app.stage.addChild(button1);
-        button1.on('pointerdown', onButtonDown1)
+        button1.on('pointerdown', () => this.onButtonDown1())
       
         var button2 = new PIXI.Sprite(PIXI.loader.resources["img/02.jpg"].texture);
         button2.buttonMode = true;
@@ -40,7 +42,7 @@ class Main {
         button2.position.set(94, 0);
         button2.scale.set(0.23,0.23);
         app.stage.addChild(button2);
-        button2.on('pointerdown', onButtonDown2)
+        button2.on('pointerdown', () => this.onButtonDown2())
       
         var button3 = new PIXI.Sprite(PIXI.loader.resources["img/03.jpg"].texture);
         button3.buttonMode = true;
@@ -48,7 +50,7 @@ class Main {
         button3.position.set(186, 0);
         button3.scale.set(0.23,0.23);
         app.stage.addChild(button3);
-        button3.on('pointerdown', onButtonDown3)
+        button3.on('pointerdown', () => this.onButtonDown3())
       
         var button4 = new PIXI.Sprite(PIXI.loader.resources["img/04.jpg"].texture);
         button4.buttonMode = true;
@@ -56,46 +58,44 @@ class Main {
         button4.position.set(280, 0);
         button4.scale.set(0.23,0.23);
         app.stage.addChild(button4);
-        button4.on('pointerdown', onButtonDown4)
+        button4.on('pointerdown', () => this.onButtonDown4())
+    }
 
-        function onButtonDown1(){
-            this.isdown = true;
-            app.stage.removeChildren();
-            setup();
-            emotion();
-          }
-          
-          function onButtonDown2(){
-            this.isdown = true;
-            app.stage.removeChildren();
-            setup();
-            classfy();
-          }
-          
-          function onButtonDown3(){
-            this.isdown = true;
-            app.stage.removeChildren();
-            setup();
-            statistics();
-          }
-          
-          function onButtonDown4(){
-            this.isdown = true;
-            app.stage.removeChildren();
-            setup();
-            introduction(); 
-          }
-          
-          function start(){
-            emotion();
-          }
-          
-          start();
+    onButtonDown1(){
+        const { app  } = this;
+        app.stage.removeChildren();
+        this.setup();
+        this.emotion();
+    }
+
+    onButtonDown2(){
+        const { app } = this;
+        app.stage.removeChildren();
+        this.setup();
+        this.classfy();
+    }
+
+    onButtonDown3(){
+        const { app } = this;
+        app.stage.removeChildren();
+        this.setup();
+        this.statistics();
+    }
+
+    onButtonDown4(){
+        const { app } = this;
+        app.stage.removeChildren();
+        this.button();
+        //introduction();
+    }  
+
+    start(){
+        const { app } = this;
+        this.emotion();
     }
 
     emotion(){
-        var that = this
-        const  app  = that;
+        const  {app}  = this;
 
         /* script_emotion.js*/ 
         var w = 375;
@@ -263,19 +263,6 @@ class Main {
 
         ctx2.x = 187.5;
         ctx2.y = 237.5;
-
-        window.app = app;
-        app.renderer.plugins.interaction.on('pointerdown', onPointerDown);
-
-        function onPointerDown() {
-            graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
-            graphics.moveTo(Math.random() * 200, Math.random() * 200);
-            graphics.bezierCurveTo(
-                Math.random() * 200, Math.random() * 200,
-                Math.random() * 200, Math.random() * 200,
-                Math.random() * 200, Math.random() * 200,
-            );
-        }
 
         function index_emotion() {
         
@@ -512,7 +499,7 @@ class Main {
 
         /*index_classfy*/
 
-        Util = {};
+        var Util = {};
         Util.timeStamp = function() {
             return window.performance.now();
         };
@@ -537,7 +524,7 @@ class Main {
             return Math.acos( (a+b-c) / Math.sqrt(4*a*b) );
         }
 
-        Tween = {};
+        var Tween = {};
         Tween.linear = function(currentTime, start, degreeOfChange, duration) {
         return degreeOfChange * currentTime / duration + start;
         };
@@ -1043,7 +1030,7 @@ class Main {
         
         /*index_statistics*/
         
-        Util = {};
+        var Util = {};
         Util.timeStamp = function() {
             return window.performance.now();
         };
@@ -1068,7 +1055,7 @@ class Main {
             return Math.acos( (a+b-c) / Math.sqrt(4*a*b) );
         }
         
-        Tween = {};
+        var Tween = {};
         Tween.linear = function(currentTime, start, degreeOfChange, duration) {
             return degreeOfChange * currentTime / duration + start;
         };
@@ -1436,6 +1423,15 @@ class Main {
         }
         
         loop_statistics();
+    }
+
+    send(){
+        this.timer = setInterval(() => {
+            this.send({
+                "protocol": 111,
+                "payload": JSON.stringify({})//JSON.stringify({ "timestamp": +new Date() })
+            });
+        }, 60 * 1000);
     }
 }
 
