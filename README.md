@@ -28,16 +28,18 @@ jupyter notebook 安装：sudo apt install python3-pip; pip3 install --upgrade p
 
 cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ;jupyter notebook
 
+[Home Page - Select or create a notebook](http://106.52.117.231:8890/tree?)
+
 cd ~/miniconda3/bin/;. ./activate;conda activate env;cd ~/huya-ext-2020/server-python;python main.py
 
 ### 环境搭建
 
-* [小游戏开发指南 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/game/index)
-* [简介 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/./getting-started)
-* [林绍钦颜值直播_林绍钦视频直播 - 虎牙直播](https://www.huya.com/22751564)
-* [虎牙小程序开发者中心](https://ext.huya.com/#/ext/rce7wayl)
-* [虎牙小程序应用商店](https://appstore.huya.com/#/i)
-* [SDK文档 - 虎牙小程序开发文档](https://dev.huya.com/docs#/sdk/SDK%E6%96%87%E6%A1%A3)
+- [小游戏开发指南 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/game/index)
+- [简介 - 虎牙小程序开发文档](https://dev.huya.com/docs/#/./getting-started)
+- [林绍钦颜值直播_林绍钦视频直播 - 虎牙直播](https://www.huya.com/22751564)
+- [虎牙小程序开发者中心](https://ext.huya.com/#/ext/rce7wayl)
+- [虎牙小程序应用商店](https://appstore.huya.com/#/i)
+- [SDK文档 - 虎牙小程序开发文档](https://dev.huya.com/docs#/sdk/SDK%E6%96%87%E6%A1%A3)
 
 ```bash
 pip install tencentcloud-sdk-python
@@ -132,5 +134,47 @@ index_streamer.js：主播端的入口文件
 
 执行顺序 index -> App(实例) -->
 
-## 任务
+## 后端测试
 
+情绪分类功能测试：
+
+- 后端启动、前端主播建立链接
+- [林绍钦颜值直播_林绍钦视频直播 - 虎牙直播](https://www.huya.com/22751564)
+- 弹幕输入：
+  - 主播真厉害
+  - 主播不行啊
+  - 牛逼
+  - 哈哈哈哈哈
+  - 哈哈
+- 前端传入：{"protocol": 111,"payload": "{}"}
+- 后端返回：{"protocol": 211, "payload": "{}"}
+- 前端传入：{"protocol": 112, "payload": "{0.1}"}
+- 弹幕输入：
+  - 主播真厉害
+  - 主播不行啊
+  - 牛逼
+  - 哈哈哈哈哈
+  - 哈哈
+- 前端传入：{"protocol": 111,"payload": "{}"}
+- 后端返回：{"protocol": 211, "payload": "{}"}
+
+统计功能测试：
+
+- 后端启动、前端主播建立链接
+- [林绍钦颜值直播_林绍钦视频直播 - 虎牙直播](https://www.huya.com/22751564)
+
+- {"protocol": 121,"payload": "{1:'yes',2:'no',3:'undefine'}"}
+- 弹幕输入：
+  - yes
+  - yes!
+  - 是
+  - yeeeees
+  - no
+  - NO
+  - undefine
+- {"protocol": 122,"payload": "{}"}
+- 弹幕输入yes
+- {"protocol": 122,"payload": "{}"}
+- {"protocol": 123,"payload": "{}"}
+- 弹幕输入yes
+- {"protocol": 122,"payload": "{}"}
