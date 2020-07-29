@@ -12,21 +12,27 @@ class Main {
         app.stage.interactive = true;
         app.renderer.backgroundColor = 0x000000;
 
+        const jwt = getJwt();
+        const wss = (this.wss = new Wss({ jwt, main: this }));
+
         PIXI.loader
             .add("img/01.jpg")
             .add("img/02.jpg")
             .add("img/03.jpg")
             .add("img/04.jpg")
-            .load(() => this.setup());
+            .load(() => {this.setup([[],[]]);this.send();this.preparation();this.wss.C2SRequestTable();})
     }
 
-    setup(){
-        this.button();
-        this.start();
+    setup(payload){
+        this.button(payload);
+        this.emotion(payload);
+        this.send();
     }
 
-    button(){
+    button(payload){
         const { app } = this;
+
+        app.stage.removeChildren();
 
         var button1 = new PIXI.Sprite(PIXI.loader.resources["img/01.jpg"].texture);
         button1.buttonMode = true;
@@ -34,7 +40,7 @@ class Main {
         button1.position.set(0, 0);
         button1.scale.set(0.23,0.23);
         app.stage.addChild(button1);
-        button1.on('pointerdown', () => this.onButtonDown1())
+        button1.on('pointerdown', () => this.onButtonDown1(payload))
       
         var button2 = new PIXI.Sprite(PIXI.loader.resources["img/02.jpg"].texture);
         button2.buttonMode = true;
@@ -42,7 +48,7 @@ class Main {
         button2.position.set(94, 0);
         button2.scale.set(0.23,0.23);
         app.stage.addChild(button2);
-        button2.on('pointerdown', () => this.onButtonDown2())
+        button2.on('pointerdown', () => this.onButtonDown2(payload))
       
         var button3 = new PIXI.Sprite(PIXI.loader.resources["img/03.jpg"].texture);
         button3.buttonMode = true;
@@ -50,7 +56,7 @@ class Main {
         button3.position.set(186, 0);
         button3.scale.set(0.23,0.23);
         app.stage.addChild(button3);
-        button3.on('pointerdown', () => this.onButtonDown3())
+        button3.on('pointerdown', () => this.onButtonDown3(payload))
       
         var button4 = new PIXI.Sprite(PIXI.loader.resources["img/04.jpg"].texture);
         button4.buttonMode = true;
@@ -58,44 +64,65 @@ class Main {
         button4.position.set(280, 0);
         button4.scale.set(0.23,0.23);
         app.stage.addChild(button4);
-        button4.on('pointerdown', () => this.onButtonDown4())
+        button4.on('pointerdown', () => this.onButtonDown4(payload))
     }
 
-    onButtonDown1(){
+    onButtonDown1(payload){
         const { app  } = this;
         app.stage.removeChildren();
-        this.setup();
-        this.emotion();
+        this.button(payload);
+        this.emotion(payload);
     }
 
-    onButtonDown2(){
+    onButtonDown2(payload){
         const { app } = this;
         app.stage.removeChildren();
-        this.setup();
-        this.classfy();
+        this.button(payload);
+        this.classfy(payload);
     }
 
-    onButtonDown3(){
+    onButtonDown3(payload){
         const { app } = this;
         app.stage.removeChildren();
-        this.setup();
-        this.statistics();
+        this.button(payload);
+        this.statistics(payload);
     }
 
-    onButtonDown4(){
+    onButtonDown4(payload){
         const { app } = this;
         app.stage.removeChildren();
-        this.button();
-        //introduction();
+        this.button(payload);
+        //introduction(payload);
     }  
 
-    start(){
-        const { app } = this;
-        this.emotion();
-    }
-
-    emotion(){
+    emotion(payload){
         const  {app}  = this;
+
+        var num_positive = 0;
+        var num_negative = 0;
+        var rate_positive = 0;
+        var rate_negative = 0;
+
+        var emotion_List = [];
+        var length0 = payload[0].length;
+        for(var i = 0; i < length0 ; ++i){
+            emotion_List[i] = payload[0][i].情感;
+        }
+
+        for(var j = 0; j < emotion_List.length; ++j){
+            if(emotion_List[j] > 0.5){
+                ++num_positive;
+            }
+            else{
+                ++num_negative;
+            }
+        }
+
+        var num_sum = num_negative + num_positive;
+        rate_positive = 100*num_positive/(num_negative+num_positive);
+        rate_negative = 100 - rate_positive
+
+
 
         /* script_emotion.js*/ 
         var w = 375;
@@ -114,27 +141,141 @@ class Main {
         var lineWidth = 0.2;
         var C = ["0xABF8FF", "0xE76B76", "0x1D2439", "0x4F3762", "0x67F9FF", "0x0C0F18"];
         var Color = ["0x00334E", "0x145374", "0x5588a3", "0xf1bc31", "0xe25822", "0xb22222", "0x7c0a02"];
+        var colorClassfyNumber= [0,50,100,200,300,500,1000]
   
-        var data = [
-        /* ring {t:total_particles, r:radius, d:distance, s:speed, c:color} */
-
-        [
-            {t:180, r:(cx-30),  d:40, s:40, c:C[4]},
-            {t:80, r:(cx-40),  d:20, s:40, c:C[4]},
-            {t:20, r:(cx-50), d:20, s:40, c:C[2]},
-            {t:40, r:(cx-60), d:20, s:40, c:C[2]},
-        ],
-        [
-            {t:160, r:(cx-70), d:40, s:20, c:C[2]},
-            {t:20, r:(cx-80), d:30, s:60, c:C[2]},
-            {t:40, r:(cx-90), d:40, s:60, c:C[2]},
-        ],
-        [
-            {t:40, r:(cx-170), d:40, s:20, c:C[5]},
-            {t:20, r:(cx-180), d:20, s:10, c:C[5]},
-        ],
-
-        ];
+        if(num_sum >= colorClassfyNumber[0] && num_sum < colorClassfyNumber[1]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[0]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[0]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[1] && num_sum < colorClassfyNumber[2]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[1]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[1]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[2] && num_sum < colorClassfyNumber[3]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[2]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[2]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[3] && num_sum < colorClassfyNumber[4]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[3]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[3]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[4] && num_sum < colorClassfyNumber[5]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[4]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[4]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[5] && num_sum < colorClassfyNumber[6]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[5]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[5]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
+        if(num_sum >= colorClassfyNumber[6]){
+            var data = [
+                [
+                    {t:120, r:(cx-30),  d:40, s:40, c:Color[6]},
+                    {t:80, r:(cx-40),  d:20, s:40, c:Color[6]},
+                    {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                    {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                ],
+                [
+                    {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                    {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                    {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                ],
+                [
+                    {t:40, r:(cx-170), d:40, s:20, c:C[5]},
+                    {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                ],
+            ];
+        }
         data.forEach(function(group) {
         var ring = [];
   
@@ -183,66 +324,65 @@ class Main {
         ctx.x = 0;
         ctx.y = 50;
 
-        function draw() {
-        var i, j, k, xd, yd, d, ring, ringLength, ringLength2, particle, p2;
+        function draw(){
 
-        ctx.clear();
-        ctx.beginFill(0x000000);
-        ctx.drawRect(0, 0 , w, h);
-        ctx.endFill();
-
-        for (i = 0; i < ringsLength; i++) {
-            ring = rings[i];
-            ringLength = ring.length;
-            ringLength2 = ringLength - 100;
-            
-            for (j = 0; j < ringLength; j++) {
-            particle = ring[j];
-
-            particle.x = cx + particle.R * sin(PI_HALF + particle.pos);
-            particle.y = cy + particle.R * cos(PI_HALF + particle.pos);
-            particle.pos += particle.s;
-
-            ctx.beginFill(particle.c,0.3);
-            ctx.drawCircle(particle.x, particle.y, particle.r)
+            var i, j, k, xd, yd, d, ring, ringLength, ringLength2, particle, p2;
+            ctx.clear();
+            ctx.beginFill(0x000000);
+            ctx.drawRect(0, 0 , w, h);
             ctx.endFill();
 
-            for (k = 0; k < ringLength2; k++) {
-                p2 = ring[k];
+            for (i = 0; i < ringsLength; i++) {
+                ring = rings[i];
+                ringLength = ring.length;
+                ringLength2 = ringLength - 100;
+                
+                for (j = 0; j < ringLength; j++) {
+                    particle = ring[j];
 
-                yd = p2.y - particle.y;
-                xd = p2.x - particle.x;
-                d = ((xd * xd) + (yd * yd));
+                    particle.x = cx + particle.R * sin(PI_HALF + particle.pos);
+                    particle.y = cy + particle.R * cos(PI_HALF + particle.pos);
+                    particle.pos += particle.s;
 
-                if (d < particle.d2) {
-                ctx.beginFill(p2.c,1);
-                ctx.lineStyle(lineWidth, p2.c, 1);
-                ctx.moveTo(particle.x, particle.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.closePath();
-                ctx.endFill();
+                    ctx.beginFill(particle.c,0.3);
+                    ctx.drawCircle(particle.x, particle.y, particle.r)
+                    ctx.endFill();
+
+                    for (k = 0; k < ringLength2; k++) {
+                        p2 = ring[k];
+
+                        yd = p2.y - particle.y;
+                        xd = p2.x - particle.x;
+                        d = ((xd * xd) + (yd * yd));
+
+                        if (d < particle.d2) {
+                            if(Math.random()*100 > 50){
+                                ctx.beginFill(p2.c,1);
+                                ctx.lineStyle(lineWidth, p2.c, 1);
+                                ctx.moveTo(particle.x, particle.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.closePath();
+                                ctx.endFill();
+                            }
+                        }
+                    }
                 }
             }
-            }
-        }
         }
 
         /* index_emotion.js*/
 
         var particles = [];
-        var sum_pre = Math.random()*101;
-        const sum = parseInt(sum_pre);
-        const sum_max = 100;
-        const sum_min = 0;
+        const sum = num_negative + num_positive;
         var numberList = new Array(sum);
 
         for (var i=0;i<numberList.length;i++){
-        numberList[i] = Math.random()*101;
+            numberList[i] = emotion_List[i];
         }
 
         for (var i = 0; i<sum ;i++){
         var token_number = numberList[i];
-        if(token_number > 50){
+        if(token_number > 0.5){
             particles.push([
             Math.random() * Math.PI * 1,
             Math.random() * Math.PI * 1, 
@@ -290,13 +430,6 @@ class Main {
         };
 
         /* mark_emotion.js*/
-
-        var w_adj = 20;
-        var h_adj = 0;
-        var num_positive = 50;
-        var num_negative = 50;
-        var rate_positive = 50;
-        var rate_negative = 50;
 
         const ctx3 = new PIXI.Graphics();
         app.stage.addChild(ctx3);
@@ -363,7 +496,7 @@ class Main {
         loop_emotion();
     }
 
-    classfy(){
+    classfy(payload){
         const { app } = this;
 
         /* script_classfy.js*/ 
@@ -388,13 +521,13 @@ class Main {
         /* ring {t:total_particles, r:radius, d:distance, s:speed, c:color} */
 
         [
-            {t:180, r:(cx-30),  d:40, s:40, c:C[4]},
+            {t:120, r:(cx-30),  d:40, s:40, c:C[4]},
             {t:80, r:(cx-40),  d:20, s:40, c:C[4]},
             {t:20, r:(cx-50), d:20, s:40, c:C[2]},
             {t:40, r:(cx-60), d:20, s:40, c:C[2]},
         ],
         [
-            {t:160, r:(cx-70), d:40, s:20, c:C[2]},
+            {t:100, r:(cx-70), d:40, s:20, c:C[2]},
             {t:20, r:(cx-80), d:30, s:60, c:C[2]},
             {t:40, r:(cx-90), d:40, s:60, c:C[2]},
         ],
@@ -485,12 +618,14 @@ class Main {
                 d = ((xd * xd) + (yd * yd));
 
                 if (d < particle.d2) {
-                ctx.beginFill(p2.c,1);
-                ctx.lineStyle(lineWidth, p2.c, 1);
-                ctx.moveTo(particle.x, particle.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.closePath();
-                ctx.endFill();
+                    if(Math.random()*100 > 50){
+                        ctx.beginFill(p2.c,1);
+                        ctx.lineStyle(lineWidth, p2.c, 1);
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.closePath();
+                        ctx.endFill();
+                    }
                 }
             }
             }
@@ -894,7 +1029,7 @@ class Main {
         loop_classfy();
     }
 
-    statistics(){
+    statistics(payload){
         const { app } = this;
 
         /* script_statistics.js*/ 
@@ -919,19 +1054,19 @@ class Main {
             /* ring {t:total_particles, r:radius, d:distance, s:speed, c:color} */
 
             [
-                {t:180, r:(cx-30),  d:40, s:40, c:C[4]},
-            {t:80, r:(cx-40),  d:20, s:40, c:C[4]},
-            {t:20, r:(cx-50), d:20, s:40, c:C[2]},
-            {t:40, r:(cx-60), d:20, s:40, c:C[2]},
+                {t:120, r:(cx-30),  d:40, s:40, c:C[4]},
+                {t:80, r:(cx-40),  d:20, s:40, c:C[4]},
+                {t:20, r:(cx-50), d:20, s:40, c:C[2]},
+                {t:40, r:(cx-60), d:20, s:40, c:C[2]},
             ],
             [
-                {t:160, r:(cx-70), d:40, s:20, c:C[2]},
-            {t:20, r:(cx-80), d:30, s:60, c:C[2]},
-            {t:40, r:(cx-90), d:40, s:60, c:C[2]},
+                {t:100, r:(cx-70), d:40, s:20, c:C[2]},
+                {t:20, r:(cx-80), d:30, s:60, c:C[2]},
+                {t:40, r:(cx-90), d:40, s:60, c:C[2]},
             ],
             [
                 {t:40, r:(cx-170), d:40, s:20, c:C[5]},
-            {t:20, r:(cx-180), d:20, s:10, c:C[5]},
+                {t:20, r:(cx-180), d:20, s:10, c:C[5]},
             ],
 
         ];
@@ -1009,20 +1144,22 @@ class Main {
                 ctx.endFill();
         
                 for (k = 0; k < ringLength2; k++) {
-                p2 = ring[k];
-        
-                yd = p2.y - particle.y;
-                xd = p2.x - particle.x;
-                d = ((xd * xd) + (yd * yd));
-        
-                if (d < particle.d2) {
-                    ctx.beginFill(p2.c,1);
-                    ctx.lineStyle(lineWidth, p2.c, 1);
-                    ctx.moveTo(particle.x, particle.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.closePath();
-                    ctx.endFill();
-                }
+                    p2 = ring[k];
+
+                    yd = p2.y - particle.y;
+                    xd = p2.x - particle.x;
+                    d = ((xd * xd) + (yd * yd));
+
+                    if (d < particle.d2) {
+                        if(Math.random()*100 > 50){
+                            ctx.beginFill(p2.c,1);
+                            ctx.lineStyle(lineWidth, p2.c, 1);
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.closePath();
+                            ctx.endFill();
+                        }
+                    }
                 }
             }
             }
@@ -1426,14 +1563,194 @@ class Main {
     }
 
     send(){
+        const { wss } = this;
         this.timer = setInterval(() => {
-            this.send({
-                "protocol": 111,
-                "payload": JSON.stringify({})//JSON.stringify({ "timestamp": +new Date() })
-            });
+            wss.C2SRequestTable();
         }, 60 * 1000);
+    }
+
+    preparation(){
+        const { app } = this;
+        let style = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 26,
+            fill: "white",
+             dropShadow: true,
+            dropShadowColor: "#3372A6",
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+          });
+
+        const Text1 = new PIXI.Text('加载中。。。', style);
+        Text1.x = 130;
+        Text1.y = 220;
+        app.stage.addChild(Text1);
+    }
+
+    test(payload){
+        const { app } = this;
+
+        var aaa = payload[0].length;
+
+        let style = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 10,
+            fill: "white",
+             dropShadow: true,
+            dropShadowColor: "#3372A6",
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+          });
+
+        const Text1 = new PIXI.Text(aaa, style);
+        Text1.x = 50;
+        Text1.y = 500;
+        app.stage.addChild(Text1);
     }
 }
 
+
+
+//先在浏览器端完成一个发送到渲染到流程
+
+// const isHyExt = getIsHyExt();
+// window.__isAnchor = getIsAnchor();
+// // window.__isAnchor = true;
+// window.__isMobile = isHyExt && !!~window.navigator.userAgent.indexOf('Mobile');
+
+class Wss{
+    constructor({ jwt, main }){
+      this.main = main;
+      // 根据传入数据生成websocket-server对象
+      const wssInstance = (this.wssInstance = getWebSocket(
+        `ws://106.52.117.231:9090/ws?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdG9yIjoiREVWIiwicm9sZSI6IlUiLCJwcm9maWxlSWQiOiJqbTZMM1JBdzFkdFNyZkdPVHhwQiIsImV4dElkIjoiZXh0SWQiLCJyb29tSWQiOiIyMjc1MTU2NCIsInVzZXJJZCI6IjIwMDAwIiwiaWF0IjoxNTk1NDY4NzIzLCJleHAiOjE1OTgwNjA3MjMsImFwcElkIjoiNGU3ZDdmNDJjYWQ2Mzc1OSJ9.0Byo7Y011EqOgIGI1mZ2MaGvCGLOCE7OIgaLZI5zn2k`
+      ));
+      wssInstance.binaryType = 'arraybuffer'
+      wssInstance.onopen = this.onopen.bind(this);
+      wssInstance.onmessage = this.onmessage.bind(this);
+      wssInstance.onclose = this.onclose.bind(this);
+    }
+  
+    onopen(event) {
+    //   this.C2SRequestTable();// 暂时是onopen触发！！！
+    //   this.C2SRequestCount();
+    }
+    C2SRequestTable() {
+      console.log( `C2SRequestTable (定时触发)请求情绪、分类表格`);
+      this.send({
+          "protocol": 111,
+          "payload": "{}"
+      });
+    }
+    // C2SSetThreshold(threshold) {
+    //   console.log( `(主播按键触发)发送阈值，调整分类精度`);
+    //   this.send({
+    //       "protocol": 112,
+    //       "payload": "{threshold}"
+    //   });
+    // }
+    // C2SSetKeyword(keyword) {
+    //   console.log( `(主播按键触发)发送关键词，请求开始统计`);
+    //   this.send({
+    //       "protocol": 121,
+    //       "payload": "{keyword}"
+    //   });
+    // }
+    C2SRequestCount() {
+      console.log( `C2SRequestCount (定时触发)请求统计结果`);
+      this.send({
+          "protocol": 122,
+          "payload": "{}"
+      });
+    }
+    // C2SStopCount() {
+    //   console.log( `(主播按键触发)停止统计结果`);
+    //   this.send({
+    //       "protocol": 123,
+    //       "payload": "{}"
+    //   });
+    // }
+    
+  
+    onmessage(event) {
+      const { main } = this;
+      const { data } = event;
+      const { protocol, payload } = JSON.parse(data);
+      // const _payload = payload ? JSON.parse(payload) : {};
+      console.log(this.deProtocol(protocol))
+      switch (~~protocol) {
+        case 211:
+          console.log(payload);
+          this.main.setup(payload);
+          //this.main.test(payload);
+          break;
+        case 222:
+          console.log(payload)
+          break;
+        default:
+          break;
+      }
+    }
+    onclose(event) {
+      console.log("链接关闭 !");
+    }
+    send(obj) {
+      this.wssInstance.send(JSON.stringify(obj));
+      console.log("发送成功 !");
+    } 
+    deProtocol(protocol){
+      switch (~~protocol) {
+        case 211:
+          return 'S2CTableContent 返回表格内容'
+        case 222:
+          return 'S2CCountContent 返回统计结果'
+        default:
+          return
+      }
+    }
+  }
+  
+  console.log("生成wss对象 !");
+  const jwt = getJwt();
+  const wss = (this.wss = new Wss({ jwt, main: this }));
+  
+  //全局函数
+  function getWebSocket(url) {
+    // if (getIsHyExt()) {
+    //     return new hyExt.WebSocket(url);
+    // } else {
+        return new WebSocket(url);
+    // }
+  }
+  
+  // function getIsHyExt() {
+  //   return !!window.hyExt;
+  // }
+  
+  // function getIsAnchor() {
+  //   return !!~window.__HYEXT_TYPE.indexOf('anchor');
+  // }
+  
+  // 返回
+  function getJwt() {
+    return new Promise((resolve, reject) => {
+        // if (getIsHyExt()) {
+        //     hyExt.vip
+        //         .getJWT()
+        //         .then((resp) => {
+        //             hyExt.logger.info('获取当前用户Token成功，返回：' + JSON.stringify(resp));
+        //             resolve(resp.jwt);
+        //         })
+        //         .catch((err) => {
+        //             hyExt.logger.info('获取当前用户Token失败，错误信息：' + err.message);
+        //             reject(err.message);
+        //         });
+        // } else {
+            resolve(false);
+        // }
+    })
+  }
 
 new Main();
