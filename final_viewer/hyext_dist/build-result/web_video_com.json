@@ -1,0 +1,1 @@
+{"web_video_com":{"type":"MINI_GAME_H5","builder":"@hyext/builder-h5game","content":{"engine":"h5game","baseURI":"http://192.168.0.105:18080/","pages":[{"path":"h5/h5-hyext-web_video_com.html"}]}}}
